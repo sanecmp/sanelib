@@ -1,0 +1,21 @@
+{
+  "request": {
+    "code": "ABCD-EFGH",
+    "hostname": "child-laptop",
+    "csr": "-----BEGIN CERTIFICATE REQUEST-----\nrequest\n-----END CERTIFICATE REQUEST-----\n"
+  },
+  "issue_response": {
+    "ca": "-----BEGIN CERTIFICATE-----\nca\n-----END CERTIFICATE-----\n",
+    "certificate": "-----BEGIN CERTIFICATE-----\nclient\n-----END CERTIFICATE-----\n"
+  },
+  "confirm_request": {
+    "version": "0.1.0",
+    "accounts": [
+      {
+        "uid": 1001,
+        "login": "child",
+        "name": "Иван"
+      }
+    ]
+  }
+}

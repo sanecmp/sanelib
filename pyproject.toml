@@ -1,0 +1,37 @@
+[build-system]
+requires = ["hatchling>=1.27"]
+build-backend = "hatchling.build"
+
+[project]
+name = "sanelib"
+dynamic = ["version"]
+description = "Shared wire protocol for sanea and sanex"
+license = "BSD-3-Clause"
+license-files = ["LICENSE"]
+requires-python = ">=3.12"
+dependencies = [
+    "packaging>=24,<27",
+    "pydantic>=2.13,<3",
+]
+
+[dependency-groups]
+tests = [
+    "pytest>=8,<10",
+    "pytest-datafixtures>=1.1,<2",
+]
+
+[tool.hatch.version]
+path = "src/sanelib/__init__.py"
+
+[tool.hatch.build.targets.sdist]
+include = ["/src/sanelib", "/pyproject.toml", "/LICENSE"]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/sanelib"]
+
+[tool.pytest.ini_options]
+addopts = "--import-mode=importlib"
+testpaths = ["tests"]
+
+[tool.makeapp.tests]
+workflow_github = ".github/workflows/sanelib.yml"
