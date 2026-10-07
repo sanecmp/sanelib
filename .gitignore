@@ -21,3 +21,4 @@ htmlcov/
 *.pem
 *.p12
 *.pfx
+vibe/

@@ -3,7 +3,7 @@ requires = ["hatchling>=1.27"]
 build-backend = "hatchling.build"
 
 [project]
-name = "sanelib"
+name = "sanecmp-sanelib"
 dynamic = ["version"]
 description = "Shared wire protocol for sanea and sanex"
 license = "BSD-3-Clause"
@@ -13,6 +13,10 @@ dependencies = [
     "packaging>=24,<27",
     "pydantic>=2.13,<3",
 ]
+
+[project.urls]
+Repository = "https://github.com/sanecmp/sanelib"
+Issues = "https://github.com/sanecmp/sanelib/issues"
 
 [dependency-groups]
 tests = [

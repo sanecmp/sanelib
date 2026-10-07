@@ -2,6 +2,8 @@
 
 sanelib contains the validated wire models shared by sanea and sanex. It has no standalone service or command-line interface.
 
+Its Python distribution is `sanecmp-sanelib`; the import package remains `sanelib`.
+
 ## Local development
 
 Run these commands from the `sanelib/` package directory:
