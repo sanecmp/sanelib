@@ -1,6 +1,7 @@
 """Tests for the shared synchronization contract."""
 
 import json
+from traceback import format_exception
 from typing import Any
 
 import pytest
@@ -22,6 +23,19 @@ def test_sync_messages_round_trip(sync_payload: dict[str, Any]) -> None:
 
     assert parse_sync_request(encode_sync_request(request)) == request
     assert parse_sync_response(encode_sync_response(response)) == response
+
+
+def test_invalid_sync_response_traceback_omits_input_values() -> None:
+    secret = "IDLE_TEST_SYNTHETIC_SECRET"
+    payload = json.dumps({"config": None, "commands": [], "audit_secret": secret})
+
+    with pytest.raises(ProtocolError, match=r"\$\.audit_secret: Extra inputs are not permitted") as raised:
+        parse_sync_response(payload)
+
+    traceback = "".join(format_exception(raised.value))
+
+    assert secret not in traceback
+    assert "input_value=" not in traceback
 
 
 def test_sync_omits_unavailable_account_snapshot(

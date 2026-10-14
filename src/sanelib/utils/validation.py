@@ -54,7 +54,8 @@ def parse_json_adapter[ValueT](
         return adapter.validate_json(data, strict=True)
 
     except ValidationError as error:
-        raise _build_protocol_error(error) from error
+        # Pydantic tracebacks include input values, even when the public message does not.
+        raise _build_protocol_error(error) from None
 
 
 def require_unique(values: Iterable[object], name: str) -> None:

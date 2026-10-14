@@ -1,27 +1,6 @@
 # sanelib
 
-sanelib contains the validated wire models shared by sanea and sanex. It has no standalone service or command-line interface.
+sanelib provides the validated messages shared by sanea and sanex for registration, settings, commands and usage events.
+It keeps both applications using the same exchange contract.
 
-Its Python distribution is `sanecmp-sanelib`; the import package remains `sanelib`.
-
-## Local development
-
-Run these commands from the `sanelib/` package directory:
-
-```bash
-ma tools
-ma tests
-```
-
-`ma tools` prepares development tools, and `ma tests` runs the configured Python 3.12
-test matrix. CI continues to run pytest directly, without makeapp.
-The samples in `tests/sanelib/protocol/datafixtures/` are synthetic protocol data,
-not collected user events or real certificates.
-
-## Release builds
-
-Build wheel and sdist files with:
-
-```bash
-uv build
-```
+See the [development guide](docs/index.md) and [contribution rules](CONTRIBUTING.md).

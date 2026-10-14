@@ -1,5 +1,10 @@
 # contributing sanelib
 
+## Project rules
+
+Read [IDLE.md](IDLE.md) before working on the project and follow its rules.
+See the [development guide](docs/index.md) for setup and local checks.
+
 ## Submit issues
 
 If you spotted something weird in application behavior or want to propose a feature you are welcome.
