@@ -23,6 +23,31 @@ from sanelib.protocol import (
 )
 
 
+def test_application_identity_round_trips_without_overwriting_process_fields(event_records: tuple[bytes, ...]) -> None:
+    payload = json.loads(event_records[2])
+    payload["application"] = {"ident": "steam:client", "name": "Steam"}
+
+    event = decode_event(payload)
+    restored = parse_event(encode_event(event))
+
+    assert restored.application.ident == "steam:client"
+    assert restored.application.name == "Steam"
+    assert restored.prc_name == payload["prc_name"]
+    assert restored.exe == payload["exe"]
+
+
+@pytest.mark.parametrize("application", [
+    {"ident": "", "name": "Steam"}, {"ident": "x" * 4097, "name": "Steam"},
+    {"ident": "steam:client", "name": ""}, {"ident": "steam:client", "name": "Steam", "cmdline": "secret"},
+])
+def test_rejects_invalid_application_metadata(event_records: tuple[bytes, ...], application: dict[str, str]) -> None:
+    payload = json.loads(event_records[2])
+    payload["application"] = application
+
+    with pytest.raises(ProtocolError, match="application"):
+        decode_event(payload)
+
+
 def test_packet_rejects_body_larger_than_six_mib() -> None:
     content = b"x" * (MAX_EVENT_PACKET_SIZE + 1)
 

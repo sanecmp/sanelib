@@ -16,6 +16,15 @@ def test_configuration_round_trip(config_payload: dict[str, Any]) -> None:
     assert config.ignored_prcs == ("nautilus",)
 
 
+def test_application_id_is_a_recognition_condition(config_payload: dict[str, Any]) -> None:
+    rule = config_payload["accounts"][0]["limits"]["session_rules"][0]["app_rules"][0]
+    rule.update(app_id="gjs:/apps/editor.js", prc_name=None, prc_name_match=None, exe=None, exe_match=None)
+
+    config = parse_config(encode_config(decode_config(config_payload)))
+
+    assert config.accounts[0].limits.session_rules[0].app_rules[0].app_id == "gjs:/apps/editor.js"
+
+
 def test_configuration_requires_ignored_processes(
     config_payload: dict[str, Any],
 ) -> None:

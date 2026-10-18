@@ -16,6 +16,7 @@ from ..utils.validation import (
     require_unique,
 )
 from .base import ProtocolModel
+from .application import ApplicationId
 
 
 class MatchType(StrEnum):
@@ -34,6 +35,7 @@ class AppRule(ProtocolModel):
     apply: bool
     max_launches: NonNegativeInt | None
     max_time: NonNegativeInt | None
+    app_id: ApplicationId | None = None
     prc_name: NonEmptyString | None
     prc_name_match: MatchType | None
     exe: NonEmptyString | None
@@ -54,7 +56,7 @@ class AppRule(ProtocolModel):
             ("wnd_title", self.wnd_title, self.wnd_title_match),
         )
 
-        if not any(condition is not None for _, condition, _ in conditions):
+        if self.app_id is None and not any(condition is not None for _, condition, _ in conditions):
             raise ValueError("at least one recognition condition is required")
 
         for name, condition, match_type in conditions:

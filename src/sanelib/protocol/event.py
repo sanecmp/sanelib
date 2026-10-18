@@ -17,6 +17,7 @@ from ..utils.validation import (
     parse_json_adapter,
 )
 from .base import ProtocolModel
+from .application import ApplicationIdentity
 
 MAX_EVENTS_PER_PACKET = 5_000
 MAX_EVENT_PACKET_SIZE = 6 * 1024 * 1024
@@ -122,6 +123,7 @@ class ProcessStartEvent(_StartEvent):
     type: Literal[EventType.PRC_START]
     prc_name: NonEmptyString
     exe: NonEmptyString
+    application: ApplicationIdentity | None = None
     meta: ProcessStartMeta
 
 class ProcessEndEvent(_Event):

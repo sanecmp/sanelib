@@ -1,6 +1,7 @@
 """Public shared wire protocol."""
 
 from .account import DiscoveredAccount
+from .application import ApplicationIdentity
 from .config import (
     Account,
     AppRule,
@@ -71,6 +72,7 @@ __all__ = [
     "Account",
     "Actor",
     "AppRule",
+    "ApplicationIdentity",
     "Command",
     "CommandResult",
     "CommandStatus",

@@ -35,3 +35,13 @@ Build wheel and sdist files with:
 ```bash
 uv build
 ```
+
+## Application identities
+
+A process-start event may include `application` with a namespaced `ident` and
+display `name`. Raw `prc_name` and `exe` remain unchanged. The ID is not a process
+or launch identifier. Unknown applications have no semantic identity.
+
+An application rule may use `app_id` as an exact recognition condition. It is
+combined with any process-name, executable and window-title conditions using AND.
+The rule's parent-facing `name` remains a label, not a condition.
