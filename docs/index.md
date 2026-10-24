@@ -42,6 +42,12 @@ A process-start event may include `application` with a namespaced `ident` and
 display `name`. Raw `prc_name` and `exe` remain unchanged. The ID is not a process
 or launch identifier. Unknown applications have no semantic identity.
 
+If a better name becomes available after a process start, `prc_update` refers to
+that start through `run_ident` and carries the same application `ident` with its
+new `name`. Its own `seq` is greater than `run_ident`; `meta` is empty. The update
+neither starts another launch nor changes its duration. Consumers resolve names
+from these updates without changing the original start event.
+
 An application rule may use `app_id` as an exact recognition condition. It is
 combined with any process-name, executable and window-title conditions using AND.
 The rule's parent-facing `name` remains a label, not a condition.

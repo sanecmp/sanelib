@@ -10,10 +10,13 @@ from sanelib.exceptions import PayloadTooLargeError, ProtocolError
 from sanelib.protocol import (
     MAX_EVENT_PACKET_SIZE,
     Actor,
+    ApplicationIdentity,
+    EmptyMeta,
     EnforcementFailedEvent,
     EventType,
     ProcessEndEvent,
     ProcessStartEvent,
+    ProcessUpdateEvent,
     SessionEndEvent,
     SessionStartEvent,
     decode_event,
@@ -44,6 +47,39 @@ def test_application_observation_sources_round_trip(event_records: tuple[bytes, 
     restored = parse_event(encode_event(decode_event(payload)))
 
     assert restored.meta.observed_via == source
+
+
+def test_process_update_round_trips_without_becoming_another_start() -> None:
+    event = ProcessUpdateEvent(
+        seq=123, type=EventType.PRC_UPDATE, timestamp=1_790_845_600, run_ident=121,
+        application=ApplicationIdentity(ident="steam:game:440", name="Team Fortress 2"), meta=EmptyMeta(),
+    )
+    content = encode_event(event)
+
+    packet = parse_event_packet(content, hashlib.sha256(content).hexdigest())
+
+    assert packet.events == (event,)
+    assert parse_event(content) == event
+    assert event.run_ident == 121
+    assert "duration" not in json.loads(content)
+
+
+@pytest.mark.parametrize(("field", "value", "message"), [
+    ("run_ident", 123, "run_ident must precede seq"),
+    ("run_ident", 124, "run_ident must precede seq"),
+    ("application", None, "application"),
+    ("application", {"ident": "steam:game:440", "name": ""}, "application.name"),
+    ("duration", 1, "Extra inputs are not permitted"),
+])
+def test_process_update_rejects_invalid_identity_or_run_fields(field: str, value: object, message: str) -> None:
+    payload = {
+        "seq": 123, "type": "prc_update", "timestamp": 1_790_845_600, "run_ident": 121,
+        "application": {"ident": "steam:game:440", "name": "Team Fortress 2"}, "meta": {},
+    }
+    payload[field] = value
+
+    with pytest.raises(ProtocolError, match=message):
+        decode_event(payload)
 
 
 @pytest.mark.parametrize("application", [

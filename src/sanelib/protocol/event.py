@@ -30,6 +30,7 @@ class EventType(StrEnum):
     SESSION_START = "session_start"
     SESSION_END = "session_end"
     PRC_START = "prc_start"
+    PRC_UPDATE = "prc_update"
     PRC_END = "prc_end"
     ENFORCEMENT_FAILED = "enforcement_failed"
 
@@ -128,6 +129,25 @@ class ProcessStartEvent(_StartEvent):
     application: ApplicationIdentity | None = None
     meta: ProcessStartMeta
 
+
+class ProcessUpdateEvent(_Event):
+    """A reported application run acquired a more informative identity label."""
+
+    type: Literal[EventType.PRC_UPDATE]
+    run_ident: NonNegativeInt
+    application: ApplicationIdentity
+    meta: EmptyMeta
+
+    @model_validator(mode="after")
+    def validate_run_ident(self) -> Self:
+        """Refer to an earlier start without creating another launch."""
+
+        if self.run_ident >= self.seq:
+            raise ValueError("run_ident must precede seq for a process update")
+
+        return self
+
+
 class ProcessEndEvent(_Event):
     """A previously reported user application run ended."""
 
@@ -151,6 +171,7 @@ Event = Annotated[
     SessionStartEvent
     | SessionEndEvent
     | ProcessStartEvent
+    | ProcessUpdateEvent
     | ProcessEndEvent
     | EnforcementFailedEvent,
     Field(discriminator="type"),
