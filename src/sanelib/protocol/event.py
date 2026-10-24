@@ -55,6 +55,8 @@ class ObservationSource(StrEnum):
     """Supported application observation sources."""
 
     ATSPI = "atspi"
+    EWMH = "ewmh"
+    PROCESS = "process"
 
 
 class SessionStartMeta(ProtocolModel):

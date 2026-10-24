@@ -36,6 +36,16 @@ def test_application_identity_round_trips_without_overwriting_process_fields(eve
     assert restored.exe == payload["exe"]
 
 
+@pytest.mark.parametrize("source", ["atspi", "ewmh", "process"])
+def test_application_observation_sources_round_trip(event_records: tuple[bytes, ...], source: str) -> None:
+    payload = json.loads(event_records[2])
+    payload["meta"]["observed_via"] = source
+
+    restored = parse_event(encode_event(decode_event(payload)))
+
+    assert restored.meta.observed_via == source
+
+
 @pytest.mark.parametrize("application", [
     {"ident": "", "name": "Steam"}, {"ident": "x" * 4097, "name": "Steam"},
     {"ident": "steam:client", "name": ""}, {"ident": "steam:client", "name": "Steam", "cmdline": "secret"},
