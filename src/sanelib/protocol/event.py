@@ -103,6 +103,40 @@ class _StartEvent(_Event):
         return self
 
 
+class UsageInterval(ProtocolModel):
+    """One continuous observed interval ending at a Unix timestamp."""
+
+    timestamp: NonNegativeInt
+    duration: Annotated[int, Field(gt=0, strict=True)]
+
+    @model_validator(mode="after")
+    def validate_start(self) -> Self:
+        """Keep the interval's inferred start at or after the Unix epoch."""
+
+        if self.duration > self.timestamp:
+            raise ValueError("interval must not start before the Unix epoch")
+
+        return self
+
+
+class _EndEvent(_Event):
+    """A completed run and its complete observed intervals, when known."""
+
+    run_ident: NonNegativeInt
+    duration: NonNegativeInt
+    intervals: tuple[UsageInterval, ...] | None = None
+    meta: EndMeta
+
+    @model_validator(mode="after")
+    def validate_duration(self) -> Self:
+        """Require known intervals to account for the entire recorded duration."""
+
+        if self.intervals is not None and sum(interval.duration for interval in self.intervals) != self.duration:
+            raise ValueError("interval durations must sum to duration")
+
+        return self
+
+
 class SessionStartEvent(_StartEvent):
     """A login session started or was already active at discovery."""
 
@@ -111,13 +145,10 @@ class SessionStartEvent(_StartEvent):
     meta: SessionStartMeta
 
 
-class SessionEndEvent(_Event):
+class SessionEndEvent(_EndEvent):
     """A previously reported login session ended."""
 
     type: Literal[EventType.SESSION_END]
-    run_ident: NonNegativeInt
-    duration: NonNegativeInt
-    meta: EndMeta
 
 
 class ProcessStartEvent(_StartEvent):
@@ -148,13 +179,10 @@ class ProcessUpdateEvent(_Event):
         return self
 
 
-class ProcessEndEvent(_Event):
+class ProcessEndEvent(_EndEvent):
     """A previously reported user application run ended."""
 
     type: Literal[EventType.PRC_END]
-    run_ident: NonNegativeInt
-    duration: NonNegativeInt
-    meta: EndMeta
 
 
 class EnforcementFailedEvent(_Event):

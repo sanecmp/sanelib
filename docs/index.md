@@ -51,3 +51,14 @@ from these updates without changing the original start event.
 An application rule may use `app_id` as an exact recognition condition. It is
 combined with any process-name, executable and window-title conditions using AND.
 The rule's parent-facing `name` remains a label, not a condition.
+
+## Usage intervals
+
+`session_end` and `prc_end` accept top-level `intervals`. Each item has an end
+`timestamp` in Unix seconds and a positive `duration` in seconds, covering
+`[timestamp - duration, timestamp)`. Starts cannot precede the Unix epoch;
+durations must sum to the event's `duration`.
+
+Missing or `null` means unknown history; `[]` means known zero usage.
+Items retain observation order. Clock changes may put their timestamps out of
+order or after the event timestamp.
